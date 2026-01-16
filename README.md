@@ -119,3 +119,4 @@ To switch between pages, hide/show the relevant sections:
 - **Product Scanner**: Show `#products-section`
 - **Food Log**: Show `#foodlog-section`
 "# JavaScript-exam-NutriPlan" 
+"# JavaScript-exam-NutriPlan" 
