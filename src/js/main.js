@@ -6,12 +6,12 @@
  */
 
 document.addEventListener("DOMContentLoaded", () => {
-  const loadingOverlay = document.getElementById("app-loading-overlay");
+  let loadingOverlay = document.getElementById("app-loading-overlay");
 
-  const menuBtn = document.getElementById("header-menu-btn");
-  const closeBtn = document.getElementById("sidebar-close-btn");
-  const sidebar = document.getElementById("sidebar");
-  const sidebarOverlay = document.getElementById("sidebar-overlay");
+  let menuBtn = document.getElementById("header-menu-btn");
+  let closeBtn = document.getElementById("sidebar-close-btn");
+  let sidebar = document.getElementById("sidebar");
+  let sidebarOverlay = document.getElementById("sidebar-overlay");
 
   window.addEventListener("load", () => {
     setTimeout(() => {
@@ -22,13 +22,13 @@ document.addEventListener("DOMContentLoaded", () => {
     }, 1000);
   });
 
-  const openSidebar = () => {
+  let openSidebar = () => {
     sidebar.classList.remove("-translate-x-full");
     sidebarOverlay.classList.add("active");
     document.body.style.overflow = "hidden";
   };
 
-  const closeSidebar = () => {
+  let closeSidebar = () => {
     sidebar.classList.add("-translate-x-full");
     sidebarOverlay.classList.remove("active");
     document.body.style.overflow = "";
@@ -522,12 +522,12 @@ function displayAreaName() {
   document.getElementById("areas-name").innerHTML = cartona;
 }
 
-const areasContainer = document.getElementById("areas-name");
+let areasContainer = document.getElementById("areas-name");
 
 if (areasContainer) {
   areasContainer.addEventListener("click", function (event) {
     if (event.target.tagName === "BUTTON") {
-      const areaName = event.target.innerText.trim();
+      let areaName = event.target.innerText.trim();
 
       allMeal(areaName);
 
@@ -696,7 +696,7 @@ barcodeInput.addEventListener("keydown", function (event) {
 
 // #####################################
 
-// food log section
+// food log section three
 
 let options = { weekday: "long", month: "short", day: "numeric" };
 let today = new Date().toLocaleDateString("en-US", options);
