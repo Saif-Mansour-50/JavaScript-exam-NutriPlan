@@ -6,33 +6,36 @@
  */
 
 document.addEventListener("DOMContentLoaded", () => {
-  let loadingOverlay = document.getElementById("app-loading-overlay");
-
   let menuBtn = document.getElementById("header-menu-btn");
   let closeBtn = document.getElementById("sidebar-close-btn");
   let sidebar = document.getElementById("sidebar");
   let sidebarOverlay = document.getElementById("sidebar-overlay");
 
-  window.addEventListener("load", () => {
-    setTimeout(() => {
-      loadingOverlay.style.opacity = "0";
-      setTimeout(() => {
-        loadingOverlay.style.display = "none";
-      }, 500);
-    }, 1000);
-  });
-
-  let openSidebar = () => {
+  const openSidebar = () => {
     sidebar.classList.remove("-translate-x-full");
-    sidebarOverlay.classList.add("active");
+    if (sidebarOverlay) sidebarOverlay.classList.add("active");
     document.body.style.overflow = "hidden";
   };
 
-  let closeSidebar = () => {
+  const closeSidebar = () => {
     sidebar.classList.add("-translate-x-full");
-    sidebarOverlay.classList.remove("active");
+    if (sidebarOverlay) sidebarOverlay.classList.remove("active");
     document.body.style.overflow = "";
   };
+
+  const checkInitialState = () => {
+    if (window.innerWidth < 1024) {
+      sidebar.classList.add("-translate-x-full");
+      if (sidebarOverlay) sidebarOverlay.classList.remove("active");
+      document.body.style.overflow = "";
+    } else {
+      sidebar.classList.remove("-translate-x-full"); // تأكيد الظهور
+    }
+  };
+
+  checkInitialState();
+
+  window.addEventListener("resize", checkInitialState);
 
   if (menuBtn) menuBtn.addEventListener("click", openSidebar);
   if (closeBtn) closeBtn.addEventListener("click", closeSidebar);
@@ -502,7 +505,7 @@ async function allArea() {
 function displayAreaName() {
   var cartona = `
     <button
-      onclick="allMeal('Seafood')" 
+      onclick="handleButtonClick(this, 'Seafood', 'category')" 
       class="px-4 py-2 bg-emerald-600 text-white rounded-full font-medium text-sm whitespace-nowrap hover:bg-emerald-700 transition-all"
     >
       All Recipes
