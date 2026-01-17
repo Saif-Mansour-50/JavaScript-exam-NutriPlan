@@ -6,42 +6,34 @@
  */
 
 document.addEventListener("DOMContentLoaded", () => {
-  // 1. عناصر شاشة التحميل
   const loadingOverlay = document.getElementById("app-loading-overlay");
 
-  // 2. عناصر القائمة الجانبية
-  const menuBtn = document.getElementById("header-menu-btn"); // تأكد أن هذا الـ ID موجود في زر الهامبرغر
+  const menuBtn = document.getElementById("header-menu-btn");
   const closeBtn = document.getElementById("sidebar-close-btn");
   const sidebar = document.getElementById("sidebar");
   const sidebarOverlay = document.getElementById("sidebar-overlay");
 
-  // --- وظيفة شاشة التحميل ---
   window.addEventListener("load", () => {
     setTimeout(() => {
       loadingOverlay.style.opacity = "0";
       setTimeout(() => {
         loadingOverlay.style.display = "none";
-      }, 500); // إخفاء تماماً بعد انتهاء الانيميشن
-    }, 1000); // تأخير بسيط لضمان رؤية اللوجو (اختياري)
+      }, 500);
+    }, 1000);
   });
 
-  // --- وظائف القائمة الجانبية ---
-
-  // فتح القائمة
   const openSidebar = () => {
     sidebar.classList.remove("-translate-x-full");
     sidebarOverlay.classList.add("active");
-    document.body.style.overflow = "hidden"; // منع السكرول في الخلفية
+    document.body.style.overflow = "hidden";
   };
 
-  // إغلاق القائمة
   const closeSidebar = () => {
     sidebar.classList.add("-translate-x-full");
     sidebarOverlay.classList.remove("active");
-    document.body.style.overflow = ""; // إعادة السكرول
+    document.body.style.overflow = "";
   };
 
-  // ربط الأحداث بالأزرار
   if (menuBtn) menuBtn.addEventListener("click", openSidebar);
   if (closeBtn) closeBtn.addEventListener("click", closeSidebar);
   if (sidebarOverlay) sidebarOverlay.addEventListener("click", closeSidebar);
@@ -279,16 +271,16 @@ document.addEventListener("click", function (e) {
 });
 // ###########################
 
-//recipes-grid
+//recipes-grid section 1
 
 let mealsLies = [];
 
 let mealData = [];
 
-async function allMeal(meal) {
+async function allMeal(searchTerm, searchType = "category") {
   try {
     let res = await fetch(
-      `https://nutriplan-api.vercel.app/api/meals/filter?category=${meal}&page=1&limit=25`,
+      `https://nutriplan-api.vercel.app/api/meals/filter?${searchType}=${searchTerm}&page=1&limit=25`,
     );
     let data = await res.json();
 
@@ -405,15 +397,18 @@ function displaycategories() {
 
 document.addEventListener("click", function (e) {
   var categoryCard = e.target.closest(".category-card");
-
   if (categoryCard) {
     var categoryName = categoryCard.getAttribute("data-category");
+    allMeal(categoryName, "category");
+    if (typeof hideMealDetails === "function") hideMealDetails();
+    return;
+  }
 
-    allMeal(categoryName);
-
-    if (typeof hideMealDetails === "function") {
-      hideMealDetails();
-    }
+  var areaBtn = e.target.closest("#areas-name button");
+  if (areaBtn) {
+    var areaName = areaBtn.innerText.trim();
+    allMeal(areaName, "area");
+    if (typeof hideMealDetails === "function") hideMealDetails();
   }
 });
 
@@ -527,27 +522,21 @@ function displayAreaName() {
   document.getElementById("areas-name").innerHTML = cartona;
 }
 
-async function getMealsByArea(areaName) {
-  try {
-    // تصحيح الرابط وإضافة مسار التصفية (filter)
-    var res = await fetch(
-      `https://nutriplan-api.vercel.app/api/meals/search?q=${areaName}&page=1&limit=25`,
-    );
-    var data = await res.json();
+const areasContainer = document.getElementById("areas-name");
 
-    if (data.results && data.results.length > 0) {
-      mealsLies = data.results;
-      displayData(); // إعادة رسم الكروت بناءً على المنطقة المختارة
-    }
+if (areasContainer) {
+  areasContainer.addEventListener("click", function (event) {
+    if (event.target.tagName === "BUTTON") {
+      const areaName = event.target.innerText.trim();
 
-    // إخفاء تفاصيل الوجبة إذا كانت مفتوحة والعودة للأعلى
-    if (typeof hideMealDetails === "function") {
-      hideMealDetails();
+      allMeal(areaName);
+
+      Array.from(this.children).forEach((btn) =>
+        btn.classList.remove("active-style"),
+      );
+      event.target.classList.add("active-style");
     }
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  } catch (error) {
-    console.error("Error fetching meals by area:", error);
-  }
+  });
 }
 
 // select img to show in details
