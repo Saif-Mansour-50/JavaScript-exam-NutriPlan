@@ -283,7 +283,7 @@ function displayData() {
   var cartona = ``;
   for (var i = 0; i < mealsLies.length; i++) {
     cartona += `
-               <div data-index="${i}" class="recipe-card bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-all cursor-pointer group">
+               <div data-index="${i}" onclick="getMealDetails('${mealsLies[i].id}')" class="recipe-card bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-all cursor-pointer group">
     <div class="relative h-48 overflow-hidden">
       <img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
         src="${mealsLies[i].thumbnail}" 
@@ -489,46 +489,48 @@ function displayAreaName() {
 
 async function getMealsByArea(areaName) {
   try {
+    // تصحيح الرابط وإضافة مسار التصفية (filter)
     var res = await fetch(
-      `https://nutriplan-api.vercel.app/api/meals/search?q=${areaName[i]}&page=1&limit=25`,
+      `https://nutriplan-api.vercel.app/api/meals/search?q=${areaName}&page=1&limit=25`,
     );
     var data = await res.json();
 
-    mealsLies = data.results;
+    if (data.results && data.results.length > 0) {
+      mealsLies = data.results;
+      displayData(); // إعادة رسم الكروت بناءً على المنطقة المختارة
+    }
 
-    displayData();
-
+    // إخفاء تفاصيل الوجبة إذا كانت مفتوحة والعودة للأعلى
     if (typeof hideMealDetails === "function") {
       hideMealDetails();
     }
-
     window.scrollTo({ top: 0, behavior: "smooth" });
   } catch (error) {
     console.error("Error fetching meals by area:", error);
   }
 }
 
-allArea();
-
 // select img to show in details
 
 let recipesImage = document.getElementById("recipes-grid");
-
-recipesImage.addEventListener("click", function (e) {
-  if (e.target.tagName === "IMG") {
-    let imageUrl = e.target.src;
-
-    let heroImage = document.getElementById("detail-meal-img");
-
-    heroImage.src = imageUrl;
-    console.log(imageUrl);
-  }
-});
+if (recipesImage) {
+  recipesImage.addEventListener("click", function (e) {
+    if (e.target.tagName === "IMG") {
+      let imageUrl = e.target.src;
+      let heroImage = document.getElementById("detail-meal-img");
+      if (heroImage) {
+        heroImage.src = imageUrl;
+      }
+      console.log("Showing image:", imageUrl);
+    }
+  });
+}
+allArea();
 
 // Product Scanner section
 
 let productList = [];
-async function allProduct(query = "") {
+async function allProduct(query = "Nutella") {
   let res = await fetch(
     `https://nutriplan-api.vercel.app/api/products/search?q=${query}&page=1&limit=24`,
   );

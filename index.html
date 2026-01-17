@@ -248,7 +248,7 @@
             <div>
               <h2 class="text-2xl font-bold text-gray-900">All Recipes</h2>
               <p id="recipes-count" class="text-sm text-gray-600 mt-1">
-                <!-- Showing 25 recipes -->
+                Showing 25 recipes
               </p>
             </div>
             <div class="flex items-center gap-3">
@@ -271,7 +271,7 @@
             </div>
           </div>
 
-          <div id="recipes-grid" class="grid grid-cols-2 gap-5">
+          <div id="recipes-grid" class="grid grid-cols-4 gap-5">
             <!-- Recipes will be loaded here by JavaScript -->
             <!-- <div
               class="recipe-card bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-all cursor-pointer group"
@@ -356,15 +356,11 @@
                     >Japanese</span
                   >
                   <span
-                    id="detail-tags"
                     class="px-3 py-1 bg-purple-500 text-white text-sm font-semibold rounded-full"
                     >Casserole</span
                   >
                 </div>
-                <h1
-                  id="detail-title"
-                  class="text-3xl md:text-4xl font-bold text-white mb-2"
-                >
+                <h1 class="text-3xl md:text-4xl font-bold text-white mb-2">
                   Teriyaki Chicken Casserole
                 </h1>
                 <div class="flex items-center gap-6 text-white/90">
@@ -648,7 +644,7 @@
             </div>
 
             <!-- Right Column - Nutrition -->
-            <div id="nutrition-side-panel" class="space-y-6">
+            <div class="space-y-6">
               <!-- Nutrition Facts -->
               <div class="bg-white rounded-2xl shadow-lg p-6 sticky top-24">
                 <h2
@@ -887,52 +883,29 @@
               id="product-categories"
             >
               <button
-                data-query="Nutella"
                 class="product-category-btn px-4 py-2 bg-emerald-100 text-emerald-700 rounded-lg text-sm font-medium whitespace-nowrap hover:bg-emerald-200 transition-all"
               >
-                <i class="fa-solid fa-cookie mr-1.5"></i>Nutella
+                <i class="fa-solid fa-cookie mr-1.5"></i>Snacks
               </button>
               <button
-                data-query="Beverages"
                 class="product-category-btn px-4 py-2 bg-blue-100 text-blue-700 rounded-lg text-sm font-medium whitespace-nowrap hover:bg-blue-200 transition-all"
               >
                 <i class="fa-solid fa-glass-water mr-1.5"></i>Beverages
               </button>
               <button
-                data-query="Breakfast Cereals"
-                class="product-category-btn px-4 py-2 bg-rose-100 text-rose-700 rounded-lg text-sm font-medium whitespace-nowrap hover:bg-rose-200 transition-all"
-              >
-                <i class="fa-solid fa-cheese mr-1.5"></i>Breakfast Cereals
-              </button>
-              <button
-                data-query="Frozen Foods"
-                class="product-category-btn px-4 py-2 bg-blue-100 text-blue-700 rounded-lg text-sm font-medium whitespace-nowrap hover:bg-blue-200 transition-all"
-              >
-                <i class="fa-solid fa-glass-water mr-1.5"></i>Frozen Foods
-              </button>
-              <button
-                data-query="Fruits"
                 class="product-category-btn px-4 py-2 bg-amber-100 text-amber-700 rounded-lg text-sm font-medium whitespace-nowrap hover:bg-amber-200 transition-all"
               >
-                <i class="fa-solid fa-bread-slice mr-1.5"></i>Fruits
+                <i class="fa-solid fa-bread-slice mr-1.5"></i>Breakfast
               </button>
               <button
-                data-query="Desserts"
                 class="product-category-btn px-4 py-2 bg-purple-100 text-purple-700 rounded-lg text-sm font-medium whitespace-nowrap hover:bg-purple-200 transition-all"
               >
                 <i class="fa-solid fa-ice-cream mr-1.5"></i>Desserts
               </button>
               <button
-                data-query="Meats"
-                class="product-category-btn px-4 py-2 bg-purple-100 text-purple-700 rounded-lg text-sm font-medium whitespace-nowrap hover:bg-purple-200 transition-all"
+                class="product-category-btn px-4 py-2 bg-rose-100 text-rose-700 rounded-lg text-sm font-medium whitespace-nowrap hover:bg-rose-200 transition-all"
               >
-                <i class="fa-solid fa-ice-cream mr-1.5"></i>Meats
-              </button>
-              <button
-                data-query="Sauces & Condiments"
-                class="product-category-btn px-4 py-2 bg-purple-100 text-purple-700 rounded-lg text-sm font-medium whitespace-nowrap hover:bg-purple-200 transition-all"
-              >
-                <i class="fa-solid fa-ice-cream mr-1.5"></i>Sauces & Condiments
+                <i class="fa-solid fa-cheese mr-1.5"></i>Dairy
               </button>
             </div>
           </div>
@@ -950,10 +923,10 @@
               id="products-grid"
               class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5"
             >
-              <!-- <div
+              <div
                 class="product-card bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-all cursor-pointer group"
                 data-barcode="7613034626844"
-              > -->
+              >
                 <div
                   class="relative h-40 bg-gray-100 flex items-center justify-center overflow-hidden"
                 >
@@ -1152,7 +1125,6 @@
                     Add meals from the Meals page or scan products
                   </p>
                 </div>
-
                 <div
                   class="flex justify-center items-center gap-4 mt-6 pt-4 border-t border-gray-100"
                 >
