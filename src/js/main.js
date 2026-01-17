@@ -116,24 +116,21 @@ function hideMealDetails() {
 }
 
 function getMealFullDetails(index) {
-  // 1. جلب بيانات الوجبة من المصفوفة بناءً على الترتيب
-  const meal = mealsLies[index];
+  // let meal = mealsLies[index];
 
-  // 2. إنشاء كرتونة المكونات (Ingredients) بشكل ديناميكي
   let Cartona = "";
   let ingredientsCartona = "";
-  for (let i = 0; i < meal.ingredients.length; i++) {
+  for (let i = 0; i < mealsLies[index].ingredients.length; i++) {
     ingredientsCartona += `
     <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-xl hover:bg-emerald-50 transition-colors">
       <input type="checkbox" class="ingredient-checkbox w-5 h-5 text-emerald-600 rounded border-gray-300" />
       <span class="text-gray-700">
-        <span class="font-medium text-gray-900">${meal.ingredients[i].measure}</span> ${meal.ingredients[i].ingredient}
+        <span class="font-medium text-gray-900">${mealsLies[index].ingredients[i].measure}</span> ${mealsLies[index].ingredients[i].ingredient}
       </span>
     </div>`;
   }
 
-  // 3. إنشاء كرتونة خطوات التحضير (Instructions)
-  let instructionsCartona = meal.instructions
+  let instructionsCartona = mealsLies[index].instructions
     .map(
       (step) => `<p class="mb-4 text-gray-700 leading-relaxed">• ${step}</p>`,
     )
@@ -150,32 +147,32 @@ function getMealFullDetails(index) {
       <!-- Hero Section -->
       <div class="bg-white rounded-2xl shadow-lg overflow-hidden mb-8">
         <div class="relative h-80 md:h-96">
-          <img src="${meal.thumbnail}" alt="${
-            meal.name
+          <img src="${mealsLies[index].thumbnail}" alt="${
+            mealsLies[index].name
           }" class="w-full h-full object-cover" />
           <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
           <div class="absolute bottom-0 left-0 right-0 p-8">
             <div class="flex items-center gap-3 mb-3">
               <span class="px-3 py-1 bg-emerald-500 text-white text-sm font-semibold rounded-full">${
-                meal.category
+                mealsLies[index].category
               }</span>
               <span class="px-3 py-1 bg-blue-500 text-white text-sm font-semibold rounded-full">${
-                meal.area
+                mealsLies[index].area
               }</span>
               ${
-                meal.tags.length > 0
+                mealsLies[index].tags.length > 0
                   ? `<span class="px-3 py-1 bg-purple-500 text-white text-sm font-semibold rounded-full">${meal.tags[0]}</span>`
                   : ""
               }
             </div>
             <h1 class="text-3xl md:text-4xl font-bold text-white mb-2">${
-              meal.name
+              mealsLies[index].name
             }</h1>
             <div class="flex items-center gap-6 text-white/90">
               <span class="flex items-center gap-2">
                 <i class="fa-solid fa-video"></i>
                 <a href="${
-                  meal.youtube
+                  mealsLies[index].youtube
                 }" target="_blank" class="hover:underline">Watch Video</a>
               </span>
             </div>
@@ -186,7 +183,7 @@ function getMealFullDetails(index) {
       <!-- Action Buttons -->
       <div class="flex flex-wrap gap-3 mb-8">
         <button id="log-meal-btn" class="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700 transition-all" data-meal-id="${
-          meal.id
+          mealsLies[index].id
         }">
           <i class="fa-solid fa-clipboard-list"></i>
           <span>Log This Meal</span>
@@ -202,7 +199,7 @@ function getMealFullDetails(index) {
               <i class="fa-solid fa-list-check text-emerald-600"></i>
               Ingredients
               <span class="text-sm font-normal text-gray-500 ml-auto">${
-                meal.ingredients.length
+                mealsLies[index].ingredients.length
               } items</span>
             </h2>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -250,39 +247,31 @@ let mealData = [];
 
 async function allMeal(meal) {
   try {
-    var res = await fetch(
+    let res = await fetch(
       `https://nutriplan-api.vercel.app/api/meals/filter?category=${meal}&page=1&limit=25`,
     );
-    var data = await res.json();
+    let data = await res.json();
 
-    mealsLies = data.results;
-    mealData = data.results;
-    // console.log(mealsLies);
-    if (!data.results || data.results.length === 0) {
-      res = await fetch(
-        `https://nutriplan-api.vercel.app{searchValue}&page=1&limit=25`,
-      );
-      data = await res.json();
-    }
     if (data.results && data.results.length > 0) {
       mealsLies = data.results;
+      mealData = data.results;
       displayData();
+    } else {
+      throw new Error("No results found");
     }
-
-    displayData();
   } catch (error) {
-    // console.error("Errorzzzzzzzzzzzzzz:", error);
     document.getElementById("recipes-grid").innerHTML = `
-    <div class="flex flex-col items-center justify-center py-12 text-center">
-    <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
-        <i class="fa-solid fa-search text-gray-400 text-2xl"></i>
-    </div>
-    <p class="text-gray-500 text-lg">No recipes found</p>
-    <p class="text-gray-400 text-sm mt-2">Try searching for something else</p>
-</div>
-`;
+      <div class="flex flex-col items-center justify-center py-12 text-center col-span-full">
+          <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+              <i class="fa-solid fa-search text-gray-400 text-2xl"></i>
+          </div>
+          <p class="text-gray-500 text-lg">No recipes found for "${meal}"</p>
+          <p class="text-gray-400 text-sm mt-2">Try searching by category (e.g. Seafood) or area (e.g. Italian)</p>
+      </div>
+    `;
   }
 }
+
 allMeal("Chicken");
 
 function displayData() {
@@ -388,17 +377,7 @@ document.addEventListener("click", function (e) {
   }
 });
 
-//search input
-
-// let SearchInputShow = document.getElementById("search-input");
-// SearchInputShow.addEventListener("keydown", function (event) {
-//   if (event.key === "Enter") {
-//     let searchValue = SearchInputShow.value.trim(); //
-
-//     allMeal(searchValue);
-//     SearchInputShow.value = "";
-//   }
-// });
+// search inputt
 
 let SearchInputShow = document.getElementById("search-input");
 let typingTimer;
@@ -428,6 +407,48 @@ SearchInputShow.addEventListener("keydown", function (event) {
       SearchInputShow.value = "";
     }
   }
+});
+
+// toggle theame Meals & Recipes
+
+let gridBtn = document.getElementById("grid-view-btn");
+let listBtn = document.getElementById("list-view-btn");
+let recipesGrid = document.getElementById("recipes-grid");
+
+gridBtn.addEventListener("click", function () {
+  gridBtn.classList.add("bg-white", "shadow-sm");
+  gridBtn
+    .querySelector("i")
+    .classList.replace("text-gray-500", "text-gray-700");
+
+  listBtn.classList.remove("bg-white", "shadow-sm");
+  listBtn
+    .querySelector("i")
+    .classList.replace("text-gray-700", "text-gray-500");
+
+  recipesGrid.classList.remove("grid-cols-1");
+  recipesGrid.classList.add("grid-cols-4");
+
+  localStorage.setItem("viewMode", "grid");
+  displayData();
+});
+
+listBtn.addEventListener("click", function () {
+  listBtn.classList.add("bg-white", "shadow-sm");
+  listBtn
+    .querySelector("i")
+    .classList.replace("text-gray-500", "text-gray-700");
+
+  gridBtn.classList.remove("bg-white", "shadow-sm");
+  gridBtn
+    .querySelector("i")
+    .classList.replace("text-gray-700", "text-gray-500");
+
+  recipesGrid.classList.remove("grid-cols-4");
+  recipesGrid.classList.add("grid-cols-1");
+
+  localStorage.setItem("viewMode", "list");
+  displayData();
 });
 
 //Meal Type
@@ -504,9 +525,10 @@ recipesImage.addEventListener("click", function (e) {
   }
 });
 
-// Product Scanner
+// Product Scanner section
+
 let productList = [];
-async function allProduct(query = "nutella") {
+async function allProduct(query = "") {
   let res = await fetch(
     `https://nutriplan-api.vercel.app/api/products/search?q=${query}&page=1&limit=24`,
   );
@@ -523,40 +545,39 @@ function displayProduct() {
   var cartona = ``;
   for (var i = 0; i < productList.length; i++) {
     cartona += `
-      <div class="product-card bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-all cursor-pointer group" 
+      <div  onclick="updateNutritionFacts(${i})" class="product-card bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-all cursor-pointer group" 
            data-barcode="${productList[i].barcode}">
         
-        <div class="relative h-40 bg-gray-100 flex items-center justify-center overflow-hidden">
-          <!-- الصورة الديناميكية -->
-          <img class="w-full h-full object-contain group-hover:scale-110 transition-transform duration-300" 
+        <div class="relative h-40 bg-gray-100 flex items-center justify-center overflow-hidden" >
+
+        <img class="w-full h-full object-contain group-hover:scale-110 transition-transform duration-300" 
                src="${productList[i].image}" 
                alt="${productList[i].name}" 
-               loading="lazy" />
+                />
 
-          <!-- درجة التغذية (Nutri-Score) -->
-          <div class="absolute top-2 left-2 bg-emerald-600 text-white text-xs font-bold px-2 py-1 rounded uppercase shadow-sm">
+          <div  class="absolute top-2 left-2 bg-emerald-600 text-white text-xs font-bold px-2 py-1 rounded uppercase shadow-sm">
             Score ${productList[i].nutritionGrade}
           </div>
 
-          <!-- مجموعة نوفا (NOVA) -->
+
           <div class="absolute top-2 right-2 bg-blue-500 text-white text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center shadow-sm">
             ${productList[i].novaGroup}
           </div>
         </div>
 
         <div class="p-4">
-          <!-- الماركة والاسم -->
-          <p class="text-xs text-emerald-600 font-semibold mb-1 truncate">${productList[i].brand}</p>
+
+        <p class="text-xs text-emerald-600 font-semibold mb-1 truncate">${productList[i].brand}</p>
           <h3 class="font-bold text-gray-900 mb-2 h-10 line-clamp-2 group-hover:text-emerald-600 transition-colors">
             ${productList[i].name}
           </h3>
 
-          <!-- السعرات الحرارية -->
+
           <div class="flex items-center gap-3 text-xs text-gray-500 mb-3">
              <span><i class="fa-solid fa-fire mr-1"></i>${productList[i].nutrients.calories} kcal/100g</span>
           </div>
 
-          <!-- العناصر الغذائية الأربعة -->
+
           <div class="grid grid-cols-4 gap-1 text-center">
             <div class="bg-emerald-50 rounded p-1.5">
               <p class="text-[11px] font-bold text-emerald-700">${productList[i].nutrients.protein}g</p>
@@ -581,7 +602,9 @@ function displayProduct() {
   }
   document.getElementById("products-grid").innerHTML = cartona;
 }
+// ##################################
 
+// #################
 document
   .getElementById("product-categories")
   .addEventListener("click", function (e) {
@@ -640,8 +663,44 @@ barcodeInput.addEventListener("keydown", function (event) {
   }
 });
 
-// food log
+// #####################################
+
+// food log section
 
 let options = { weekday: "long", month: "short", day: "numeric" };
 let today = new Date().toLocaleDateString("en-US", options);
 document.getElementById("foodlog-date").textContent = today;
+
+//  Browse Recipes with Meals & Recipes
+
+var browseRecipesBtn = document.getElementById("browse-recipes-btn");
+var scanProductBtn = document.getElementById("scan-product-btn");
+
+if (browseRecipesBtn) {
+  browseRecipesBtn.addEventListener("click", function () {
+    showSection("meals");
+    updateActiveLink(navMeals);
+  });
+}
+
+if (scanProductBtn) {
+  scanProductBtn.addEventListener("click", function () {
+    showSection("scanner");
+    updateActiveLink(navScanner);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+}
+
+// Scan Product with Product Scanner
+
+var scanProductBtn = document.getElementById("scan-product-btn");
+
+if (scanProductBtn) {
+  scanProductBtn.addEventListener("click", function () {
+    showSection("scanner");
+
+    updateActiveLink(navScanner);
+
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+}
