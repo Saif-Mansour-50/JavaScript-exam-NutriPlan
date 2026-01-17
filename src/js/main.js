@@ -11,25 +11,25 @@ document.addEventListener("DOMContentLoaded", () => {
   let sidebar = document.getElementById("sidebar");
   let sidebarOverlay = document.getElementById("sidebar-overlay");
 
-  const openSidebar = () => {
+  let openSidebar = () => {
     sidebar.classList.remove("-translate-x-full");
     if (sidebarOverlay) sidebarOverlay.classList.add("active");
     document.body.style.overflow = "hidden";
   };
 
-  const closeSidebar = () => {
+  let closeSidebar = () => {
     sidebar.classList.add("-translate-x-full");
     if (sidebarOverlay) sidebarOverlay.classList.remove("active");
     document.body.style.overflow = "";
   };
 
-  const checkInitialState = () => {
+  let checkInitialState = () => {
     if (window.innerWidth < 1024) {
       sidebar.classList.add("-translate-x-full");
       if (sidebarOverlay) sidebarOverlay.classList.remove("active");
       document.body.style.overflow = "";
     } else {
-      sidebar.classList.remove("-translate-x-full"); // تأكيد الظهور
+      sidebar.classList.remove("-translate-x-full");
     }
   };
 
@@ -195,7 +195,7 @@ function getMealFullDetails(index) {
               }</span>
               ${
                 mealsLies[index].tags.length > 0
-                  ? `<span class="px-3 py-1 bg-purple-500 text-white text-sm font-semibold rounded-full">${meal.tags[0]}</span>`
+                  ? `<span class="px-3 py-1 bg-purple-500 text-white text-sm font-semibold rounded-full"></span>`
                   : ""
               }
             </div>
@@ -300,7 +300,7 @@ async function allMeal(searchTerm, searchType = "category") {
           <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
               <i class="fa-solid fa-search text-gray-400 text-2xl"></i>
           </div>
-          <p class="text-gray-500 text-lg">No recipes found for "${meal}"</p>
+          <p class="text-gray-500 text-lg">No recipes found for ${searchTerm} </p>
           <p class="text-gray-400 text-sm mt-2">Try searching by category (e.g. Seafood) or area (e.g. Italian)</p>
       </div>
     `;
@@ -506,7 +506,7 @@ function displayAreaName() {
   var cartona = `
     <button
       onclick="handleButtonClick(this, 'Seafood', 'category')" 
-      class="px-4 py-2 bg-emerald-600 text-white rounded-full font-medium text-sm whitespace-nowrap hover:bg-emerald-700 transition-all"
+      class="active-area px-4 py-2 bg-gray-100 text-gray-700 rounded-full font-medium text-sm whitespace-nowrap hover:bg-emerald-700 transition-all"
     >
       All Recipes
     </button>`;
@@ -514,16 +514,33 @@ function displayAreaName() {
   for (var i = 0; i < areasList.length; i++) {
     cartona += `
       <button
-        onclick="getMealsByArea('${areasList[i].name}')"
-        class="px-4 py-2 bg-gray-100 text-gray-700 rounded-full font-medium text-sm whitespace-nowrap hover:bg-gray-200 transition-all"
+        onclick="handleButtonClick(this, '${areasList[i].name}', 'area')"
+        class="px-4 py-2 bg-gray-100 text-gray-700 rounded-full font-medium text-sm whitespace-nowrap hover:bg-gray-200 transition-all "
       >
         ${areasList[i].name}
-      </button>
-    `;
+      </button>`;
   }
-
   document.getElementById("areas-name").innerHTML = cartona;
 }
+
+// ##################
+
+function handleButtonClick(clickedBtn, searchTerm, searchType) {
+  let allButtons = document.querySelectorAll("#areas-name button");
+
+  for (var i = 0; i < allButtons.length; i++) {
+    allButtons[i].classList.remove("active-area");
+  }
+
+  clickedBtn.classList.add("active-area");
+
+  allMeal(searchTerm, searchType);
+
+  if (typeof hideMealDetails === "function") {
+    hideMealDetails();
+  }
+}
+// ##################
 
 let areasContainer = document.getElementById("areas-name");
 
