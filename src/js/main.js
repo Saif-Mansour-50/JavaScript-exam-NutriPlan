@@ -5,6 +5,48 @@
  * Import your modules and initialize the app here.
  */
 
+document.addEventListener("DOMContentLoaded", () => {
+  // 1. عناصر شاشة التحميل
+  const loadingOverlay = document.getElementById("app-loading-overlay");
+
+  // 2. عناصر القائمة الجانبية
+  const menuBtn = document.getElementById("header-menu-btn"); // تأكد أن هذا الـ ID موجود في زر الهامبرغر
+  const closeBtn = document.getElementById("sidebar-close-btn");
+  const sidebar = document.getElementById("sidebar");
+  const sidebarOverlay = document.getElementById("sidebar-overlay");
+
+  // --- وظيفة شاشة التحميل ---
+  window.addEventListener("load", () => {
+    setTimeout(() => {
+      loadingOverlay.style.opacity = "0";
+      setTimeout(() => {
+        loadingOverlay.style.display = "none";
+      }, 500); // إخفاء تماماً بعد انتهاء الانيميشن
+    }, 1000); // تأخير بسيط لضمان رؤية اللوجو (اختياري)
+  });
+
+  // --- وظائف القائمة الجانبية ---
+
+  // فتح القائمة
+  const openSidebar = () => {
+    sidebar.classList.remove("-translate-x-full");
+    sidebarOverlay.classList.add("active");
+    document.body.style.overflow = "hidden"; // منع السكرول في الخلفية
+  };
+
+  // إغلاق القائمة
+  const closeSidebar = () => {
+    sidebar.classList.add("-translate-x-full");
+    sidebarOverlay.classList.remove("active");
+    document.body.style.overflow = ""; // إعادة السكرول
+  };
+
+  // ربط الأحداث بالأزرار
+  if (menuBtn) menuBtn.addEventListener("click", openSidebar);
+  if (closeBtn) closeBtn.addEventListener("click", closeSidebar);
+  if (sidebarOverlay) sidebarOverlay.addEventListener("click", closeSidebar);
+});
+
 // toggole sections
 
 let navMeals = document.getElementById("nav-meals");
@@ -31,7 +73,6 @@ function showSection(target) {
     mainMealSections[2],
   ];
 
-  // 2. حلقة for عادية لإخفاء جميع الأقسام
   for (var i = 0; i < allSections.length; i++) {
     var currentSection = allSections[i];
     if (currentSection) {
@@ -39,9 +80,7 @@ function showSection(target) {
     }
   }
 
-  // 3. إظهار القسم المختار بناءً على الهدف (target)
   if (target === "meals") {
-    // حلقة for لإظهار أقسام الوجبات الثلاثة
     for (var j = 0; j < mainMealSections.length; j++) {
       if (mainMealSections[j]) {
         mainMealSections[j].classList.remove("hidden");
@@ -238,6 +277,7 @@ document.addEventListener("click", function (e) {
     showMealDetails();
   }
 });
+// ###########################
 
 //recipes-grid
 
