@@ -718,8 +718,6 @@ barcodeInput.addEventListener("keydown", function (event) {
   }
 });
 
-// #####################################
-
 // food log section three
 
 let options = { weekday: "long", month: "short", day: "numeric" };
@@ -762,7 +760,49 @@ if (scanProductBtn) {
 
 //  Today's Nutrition
 
-var TodayNutrition = [];
+// var TodayNutrition = [];
+
+// async function analyzeNutrition() {
+//   const url = "https://nutriplan-api.vercel.app/api/nutrition/analyze";
+//   const recipeData = {
+//     recipeName: "Baked salmon with fennel & tomatoes",
+//     ingredients: [
+//       "2 medium Fennel",
+//       "2 tbs chopped Parsley",
+//       "Juice of 1 Lemon",
+//       "175g Cherry Tomatoes",
+//       "1 tbs Olive Oil",
+//       "350g Salmon",
+//       "to serve Black Olives",
+//     ],
+//   };
+
+//   try {
+//     const response = await fetch(url, {
+//       method: "POST",
+//       headers: {
+//         "Content-Type": "application/json",
+//         "x-api-key": "vJPCxsQScz84b09LWgZxOeTkhQ0Olp0RMMoSoouy",
+//       },
+//       body: JSON.stringify(recipeData),
+//     });
+
+//     const result = await response.json();
+
+//     TodayNutrition = result.data.ingredients;
+
+//     console.log(TodayNutrition);
+
+//     // 1. تحديث الواجهة
+//     displayIntoFoodLog();
+//   } catch (error) {
+//     console.error("Error:", error);
+//   }
+// }
+
+//#############
+
+var TodayNutrition = []; // تعود مصفوفة فارغة تلقائياً عند عمل Reload
 
 async function analyzeNutrition() {
   const url = "https://nutriplan-api.vercel.app/api/nutrition/analyze";
@@ -791,11 +831,13 @@ async function analyzeNutrition() {
 
     const result = await response.json();
 
-    TodayNutrition = result.data.ingredients;
+    // التعديل الأساسي: استخدام push مع spread operator لدمج العناصر الجديدة مع القديمة
+    // هذا ما يجعل القيم تزيد (تراكمية) بدلاً من استبدالها
+    TodayNutrition.push(...result.data.ingredients);
 
-    console.log(TodayNutrition);
+    console.log("Current Log:", TodayNutrition);
 
-    // 1. تحديث الواجهة
+    // تحديث الواجهة بالبيانات الجديدة
     displayIntoFoodLog();
   } catch (error) {
     console.error("Error:", error);
@@ -806,22 +848,21 @@ function displayIntoFoodLog() {
   var totals = { cal: 0, pro: 0, carb: 0, fat: 0 };
   var itemsListHtml = "";
 
+  // حساب المجاميع من كافة العناصر الموجودة في المصفوفة حالياً
   for (let i = 0; i < TodayNutrition.length; i++) {
     let item = TodayNutrition[i];
     let nut = item.nutrition || {};
 
-    console.log(item.original);
-
-    totals.cal += nut.calories;
-    totals.pro += nut.protein;
-    totals.carb += nut.carbs;
-    totals.fat += nut.fat;
+    totals.cal += item.nutrition.calories || 0;
+    totals.pro += item.nutrition.protein || 0;
+    totals.carb += item.nutrition.carbs || 0;
+    totals.fat += item.nutrition.fat || 0;
 
     itemsListHtml += `
       <div class="flex justify-between items-center p-3 bg-white rounded-lg border border-gray-100 shadow-sm">
-        <span class="text-sm font-bold text-gray-700">${item.original}</span>
+        <span class="text-sm font-bold text-gray-700">${TodayNutrition[i].original}</span>
         <span class="text-xs font-semibold bg-emerald-100 text-emerald-700 px-2 py-1 rounded">
-          ${nut.calories} kcal
+          ${(item.nutrition.calories || 0).toFixed(0)} kcal
         </span>
       </div>`;
   }
@@ -857,21 +898,9 @@ function displayIntoFoodLog() {
   `;
 
   document.getElementById("foodlog-today-section").innerHTML = cartona;
-
-  const logBtn = document.getElementById("log-meal-btn");
-  if (logBtn) {
-    logBtn.onclick = function () {
-      Swal.fire({
-        position: "top-end",
-        icon: "success",
-        title: "Meal logged successfully",
-        showConfirmButton: false,
-        timer: 1500,
-        toast: true,
-      });
-    };
-  }
 }
+
+//#############
 
 function createProgressCard(label, current, goal, colorClass, perc, unit) {
   const colors = {
@@ -908,7 +937,7 @@ function createProgressCard(label, current, goal, colorClass, perc, unit) {
         <span class="text-xs font-medium text-gray-500">${current}/${goal} ${unit}</span>
       </div>
       <div class="w-full bg-gray-200 rounded-full h-2">
-        <!-- هنا الـ style="width: ${perc}%" هو الذي يجعل الشريط ديناميكي -->
+        <!--   style="width: ${perc}%" -->
         <div class="${selected.bar} h-2 rounded-full transition-all duration-1000" style="width: ${perc}%"></div>
       </div>
     </div>`;
@@ -917,3 +946,15 @@ function createProgressCard(label, current, goal, colorClass, perc, unit) {
 analyzeNutrition();
 
 ///...  Weekly Overview
+
+document.addEventListener("click", function (e) {
+  if (e.target.closest("#log-meal-btn")) {
+    Swal.fire({
+      position: "center",
+      icon: "success",
+      title: "Meal logged successfully",
+      showConfirmButton: false,
+      timer: 1500,
+    });
+  }
+});
