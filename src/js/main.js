@@ -760,49 +760,8 @@ if (scanProductBtn) {
 
 //  Today's Nutrition
 
-// var TodayNutrition = [];
 
-// async function analyzeNutrition() {
-//   const url = "https://nutriplan-api.vercel.app/api/nutrition/analyze";
-//   const recipeData = {
-//     recipeName: "Baked salmon with fennel & tomatoes",
-//     ingredients: [
-//       "2 medium Fennel",
-//       "2 tbs chopped Parsley",
-//       "Juice of 1 Lemon",
-//       "175g Cherry Tomatoes",
-//       "1 tbs Olive Oil",
-//       "350g Salmon",
-//       "to serve Black Olives",
-//     ],
-//   };
-
-//   try {
-//     const response = await fetch(url, {
-//       method: "POST",
-//       headers: {
-//         "Content-Type": "application/json",
-//         "x-api-key": "vJPCxsQScz84b09LWgZxOeTkhQ0Olp0RMMoSoouy",
-//       },
-//       body: JSON.stringify(recipeData),
-//     });
-
-//     const result = await response.json();
-
-//     TodayNutrition = result.data.ingredients;
-
-//     console.log(TodayNutrition);
-
-//     // 1. تحديث الواجهة
-//     displayIntoFoodLog();
-//   } catch (error) {
-//     console.error("Error:", error);
-//   }
-// }
-
-//#############
-
-var TodayNutrition = []; // تعود مصفوفة فارغة تلقائياً عند عمل Reload
+var TodayNutrition = []; /
 
 async function analyzeNutrition() {
   const url = "https://nutriplan-api.vercel.app/api/nutrition/analyze";
@@ -831,13 +790,10 @@ async function analyzeNutrition() {
 
     const result = await response.json();
 
-    // التعديل الأساسي: استخدام push مع spread operator لدمج العناصر الجديدة مع القديمة
-    // هذا ما يجعل القيم تزيد (تراكمية) بدلاً من استبدالها
     TodayNutrition.push(...result.data.ingredients);
 
     console.log("Current Log:", TodayNutrition);
 
-    // تحديث الواجهة بالبيانات الجديدة
     displayIntoFoodLog();
   } catch (error) {
     console.error("Error:", error);
@@ -848,7 +804,6 @@ function displayIntoFoodLog() {
   var totals = { cal: 0, pro: 0, carb: 0, fat: 0 };
   var itemsListHtml = "";
 
-  // حساب المجاميع من كافة العناصر الموجودة في المصفوفة حالياً
   for (let i = 0; i < TodayNutrition.length; i++) {
     let item = TodayNutrition[i];
     let nut = item.nutrition || {};
