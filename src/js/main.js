@@ -5,6 +5,8 @@
  * Import your modules and initialize the app here.
  */
 
+// toggole sidebar
+
 document.addEventListener("DOMContentLoaded", () => {
   let menuBtn = document.getElementById("header-menu-btn");
   let closeBtn = document.getElementById("sidebar-close-btn");
@@ -282,6 +284,10 @@ let mealData = [];
 
 async function allMeal(searchTerm, searchType = "category") {
   try {
+    document.getElementById("recipes-grid").innerHTML = `
+      <div class="col-span-full text-center py-10">
+        <i class="fas fa-circle-notch fa-spin text-indigo-500 text-3xl"></i>
+      </div>`;
     let res = await fetch(
       `https://nutriplan-api.vercel.app/api/meals/filter?${searchType}=${searchTerm}&page=1&limit=25`,
     );
@@ -291,8 +297,6 @@ async function allMeal(searchTerm, searchType = "category") {
       mealsLies = data.results;
       mealData = data.results;
       displayData();
-    } else {
-      throw new Error("No results found");
     }
   } catch (error) {
     document.getElementById("recipes-grid").innerHTML = `
@@ -307,7 +311,7 @@ async function allMeal(searchTerm, searchType = "category") {
   }
 }
 
-allMeal("Chicken");
+allMeal("Seafood", "category");
 
 function displayData() {
   let countElement = document.getElementById("recipes-count");
@@ -318,7 +322,7 @@ function displayData() {
   var cartona = ``;
   for (var i = 0; i < mealsLies.length; i++) {
     cartona += `
-               <div data-index="${i}" onclick="getMealDetails('${mealsLies[i].id}')" class="recipe-card bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-all cursor-pointer group">
+               <div  data-meal-id="${mealsLies[i].id}" data-index="${i}" onclick="getMealDetails('${mealsLies[i].id}')" class="recipe-card bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-all cursor-pointer group">
     <div class="relative h-48 overflow-hidden">
       <img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
         src="${mealsLies[i].thumbnail}" 
@@ -570,7 +574,7 @@ if (recipesImage) {
       if (heroImage) {
         heroImage.src = imageUrl;
       }
-      console.log("Showing image:", imageUrl);
+      console.log(imageUrl);
     }
   });
 }
@@ -755,3 +759,161 @@ if (scanProductBtn) {
     window.scrollTo({ top: 0, behavior: "smooth" });
   });
 }
+
+//  Today's Nutrition
+
+var TodayNutrition = [];
+
+async function analyzeNutrition() {
+  const url = "https://nutriplan-api.vercel.app/api/nutrition/analyze";
+  const recipeData = {
+    recipeName: "Baked salmon with fennel & tomatoes",
+    ingredients: [
+      "2 medium Fennel",
+      "2 tbs chopped Parsley",
+      "Juice of 1 Lemon",
+      "175g Cherry Tomatoes",
+      "1 tbs Olive Oil",
+      "350g Salmon",
+      "to serve Black Olives",
+    ],
+  };
+
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": "vJPCxsQScz84b09LWgZxOeTkhQ0Olp0RMMoSoouy",
+      },
+      body: JSON.stringify(recipeData),
+    });
+
+    const result = await response.json();
+
+    TodayNutrition = result.data.ingredients;
+
+    console.log(TodayNutrition);
+
+    // 1. تحديث الواجهة
+    displayIntoFoodLog();
+  } catch (error) {
+    console.error("Error:", error);
+  }
+}
+
+function displayIntoFoodLog() {
+  var totals = { cal: 0, pro: 0, carb: 0, fat: 0 };
+  var itemsListHtml = "";
+
+  for (let i = 0; i < TodayNutrition.length; i++) {
+    let item = TodayNutrition[i];
+    let nut = item.nutrition || {};
+
+    console.log(item.original);
+
+    totals.cal += nut.calories;
+    totals.pro += nut.protein;
+    totals.carb += nut.carbs;
+    totals.fat += nut.fat;
+
+    itemsListHtml += `
+      <div class="flex justify-between items-center p-3 bg-white rounded-lg border border-gray-100 shadow-sm">
+        <span class="text-sm font-bold text-gray-700">${item.original}</span>
+        <span class="text-xs font-semibold bg-emerald-100 text-emerald-700 px-2 py-1 rounded">
+          ${nut.calories} kcal
+        </span>
+      </div>`;
+  }
+
+  const goals = { cal: 2000, pro: 150, carb: 250, fat: 70 };
+
+  const getPerc = (current, goal) =>
+    Math.round(Math.min((current / goal) * 100, 100));
+
+  var cartona = `
+    <h3 class="text-lg font-bold text-gray-900 mb-4">
+      <i class="fa-solid fa-fire text-orange-500 mr-2"></i> Today's Nutrition (2026)
+    </h3>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+      ${createProgressCard("Calories", totals.cal.toFixed(0), goals.cal, "emerald", getPerc(totals.cal, goals.cal), "kcal")}
+      ${createProgressCard("Protein", totals.pro.toFixed(1), goals.pro, "blue", getPerc(totals.pro, goals.pro), "g")}
+      ${createProgressCard("Carbs", totals.carb.toFixed(1), goals.carb, "amber", getPerc(totals.carb, goals.carb), "g")}
+      ${createProgressCard("Fat", totals.fat.toFixed(1), goals.fat, "purple", getPerc(totals.fat, goals.fat), "g")}
+    </div>
+
+    <div class="border-t border-gray-200 pt-4">
+      <div class="flex justify-between items-center mb-3">
+         <h4 class="text-sm font-semibold text-gray-700">Logged Items (${TodayNutrition.length})</h4>
+         <button id="log-meal-btn" class="text-xs bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 transition">
+            Confirm Log
+         </button>
+      </div>
+      <div id="logged-items-list" class="space-y-2 max-h-60 overflow-y-auto">
+        ${TodayNutrition.length > 0 ? itemsListHtml : '<p class="text-gray-400 text-center py-4">No items logged yet</p>'}
+      </div>
+    </div>
+  `;
+
+  document.getElementById("foodlog-today-section").innerHTML = cartona;
+
+  const logBtn = document.getElementById("log-meal-btn");
+  if (logBtn) {
+    logBtn.onclick = function () {
+      Swal.fire({
+        position: "top-end",
+        icon: "success",
+        title: "Meal logged successfully",
+        showConfirmButton: false,
+        timer: 1500,
+        toast: true,
+      });
+    };
+  }
+}
+
+function createProgressCard(label, current, goal, colorClass, perc, unit) {
+  const colors = {
+    emerald: {
+      bg: "bg-emerald-50",
+      border: "border-emerald-100",
+      bar: "bg-emerald-500 text-emerald-500",
+    },
+    blue: {
+      bg: "bg-blue-50",
+      border: "border-blue-100",
+      bar: "bg-blue-500 text-blue-500",
+    },
+    amber: {
+      bg: "bg-amber-50",
+      border: "border-amber-100",
+      bar: "bg-amber-500 text-amber-500",
+    },
+    purple: {
+      bg: "bg-purple-50",
+      border: "border-purple-100",
+      bar: "bg-purple-500 text-purple-500",
+    },
+  };
+
+  const selected = colors[colorClass] || colors.emerald;
+
+  console.log(selected);
+
+  return `
+    <div class="${selected.bg} rounded-xl p-4 border ${selected.border}">
+      <div class="flex items-center justify-between mb-2">
+        <span class="text-sm font-bold text-gray-700">${label}</span>
+        <span class="text-xs font-medium text-gray-500">${current}/${goal} ${unit}</span>
+      </div>
+      <div class="w-full bg-gray-200 rounded-full h-2">
+        <!-- هنا الـ style="width: ${perc}%" هو الذي يجعل الشريط ديناميكي -->
+        <div class="${selected.bar} h-2 rounded-full transition-all duration-1000" style="width: ${perc}%"></div>
+      </div>
+    </div>`;
+}
+
+analyzeNutrition();
+
+///...  Weekly Overview
