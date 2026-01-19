@@ -659,7 +659,6 @@ function displayProduct() {
 }
 // ##################################
 
-// #################
 document
   .getElementById("product-categories")
   .addEventListener("click", function (e) {
@@ -758,10 +757,7 @@ if (scanProductBtn) {
   });
 }
 
-//  Today's Nutrition
-
-
-var TodayNutrition = []; /
+var TodayNutrition = [];
 
 async function analyzeNutrition() {
   const url = "https://nutriplan-api.vercel.app/api/nutrition/analyze";
@@ -905,11 +901,13 @@ analyzeNutrition();
 document.addEventListener("click", function (e) {
   if (e.target.closest("#log-meal-btn")) {
     Swal.fire({
-      position: "center",
+      title: "Success!",
+      text: "Meal logged successfully",
       icon: "success",
-      title: "Meal logged successfully",
+      timer: 2000,
       showConfirmButton: false,
-      timer: 1500,
+      toast: true,
+      position: "center",
     });
   }
 });
